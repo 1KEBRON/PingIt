@@ -15,13 +15,31 @@ const rollDiceBtn = document.querySelector('.btn--roll');
 const restartBtn = document.querySelector('.btn--new');
 const holdDiceBtn = document.querySelector('.btn--hold');
 
-// starting conditions
-let scores = [0,0]
-score0E.textContent = 0;
-score1E.textContent = 0;
-let currentScore = 0;
-let activePlayer = 0
-diceE.classList.add('hidden');
+
+  // starting conditions
+let scores,currentScore,activePlayer,playing
+
+const init = () =>{
+
+   scores = [0, 0];
+   currentScore = 0;
+   activePlayer = 0;
+   playing = true;
+  
+  score0E.textContent = 0;
+  score1E.textContent = 0;
+  currentScore0E.textContent = 0;
+  currentScore1E.textContent = 0;
+
+  diceE.classList.add('hidden');
+  player0E.classList.remove('player--winner');
+  player1E.classList.remove('player--winner');
+  player0E.classList.add('player--active');
+  player1E.classList.remove('player--active');
+} ;init()
+
+
+            
 
 //switch Players
 const switchPlayer = ()=>{
@@ -33,11 +51,12 @@ const switchPlayer = ()=>{
 }
 
 const handleDiceRoll = ()=>{
+      if(playing){
       // 1. random dice roll 
       const randomDice = Math.trunc(Math.random() * 6) + 1;
       // 2. display dice 
       diceE.classList.remove('hidden');
-      diceE.src = `/dice-${randomDice}.png`
+      diceE.src = `/img/dice-${randomDice}.png`
       
       // 3. if dice == 1 
       if(randomDice !== 1 ){
@@ -47,35 +66,37 @@ const handleDiceRoll = ()=>{
       else{
            switchPlayer();
       }
-
+      }
 }
 
 const handleHoldDice = () => {
+      if(playing){
       // 1. add currentScore to totalScore
       scores[activePlayer] += currentScore
       document.querySelector(`#score--${activePlayer}`).textContent = scores[activePlayer]
       // 2. if(score !>= 100)
       if(scores[activePlayer] >= 100 ){
            // game finished active player wins
+           playing = false
             document.querySelector(`.player--${activePlayer}`)
               .classList.add('player--winner');
             document
               .querySelector(`.player--${activePlayer}`)
               .classList.remove('player--active');
-            document.querySelector(`#name--${activePlayer}`).textContent = ` The Player ${activePlayer +1 } Won!!`
-            holdDiceBtn.classList.add('hidden')
-            rollDiceBtn.classList.add('hidden');
+            
+            diceE.classList.add('hidden');
+            // holdDiceBtn.classList.add('hidden')
+            // rollDiceBtn.classList.add('hidden');
 
       }// else -> switch player 
       else{
             switchPlayer()
       }
+}
             
 }
-const handleRestart = () =>{
 
-}
 
 rollDiceBtn.addEventListener('click',handleDiceRoll)
 holdDiceBtn.addEventListener('click',handleHoldDice)
-restartBtn.addEventListener('click', handleRestart)
+restartBtn.addEventListener('click', init)
