@@ -16,13 +16,21 @@ const restartBtn = document.querySelector('.btn--new');
 const holdDiceBtn = document.querySelector('.btn--hold');
 
 // starting conditions
-let score = [0,0]
+let scores = [0,0]
 score0E.textContent = 0;
 score1E.textContent = 0;
 let currentScore = 0;
 let activePlayer = 0
 diceE.classList.add('hidden');
 
+//switch Players
+const switchPlayer = ()=>{
+      document.querySelector(`#current--${activePlayer}`).textContent = 0;
+      currentScore = 0;
+      activePlayer = activePlayer === 0 ? 1 : 0;
+      player0E.classList.toggle('player--active');
+      player1E.classList.toggle('player--active');
+}
 
 const handleDiceRoll = ()=>{
       // 1. random dice roll 
@@ -30,38 +38,44 @@ const handleDiceRoll = ()=>{
       // 2. display dice 
       diceE.classList.remove('hidden');
       diceE.src = `/dice-${randomDice}.png`
-      console.log(randomDice)
+      
       // 3. if dice == 1 
       if(randomDice !== 1 ){
             currentScore += randomDice
             document.querySelector(`#current--${activePlayer}`).textContent = currentScore;
       }//switch players
       else{
-            document.querySelector( `#current--${activePlayer}` ).textContent = 0;
-            currentScore = 0
-            activePlayer =  activePlayer === 0 ? 1 : 0
-            player0E.classList.toggle('player--active');
-            player1E.classList.toggle('player--active')
+           switchPlayer();
       }
 
 }
+
+const handleHoldDice = () => {
+      // 1. add currentScore to totalScore
+      scores[activePlayer] += currentScore
+      document.querySelector(`#score--${activePlayer}`).textContent = scores[activePlayer]
+      // 2. if(score !>= 100)
+      if(scores[activePlayer] >= 100 ){
+           // game finished active player wins
+            document.querySelector(`.player--${activePlayer}`)
+              .classList.add('player--winner');
+            document
+              .querySelector(`.player--${activePlayer}`)
+              .classList.remove('player--active');
+            document.querySelector(`#name--${activePlayer}`).textContent = ` The Player ${activePlayer +1 } Won!!`
+            holdDiceBtn.classList.add('hidden')
+            rollDiceBtn.classList.add('hidden');
+
+      }// else -> switch player 
+      else{
+            switchPlayer()
+      }
+            
+}
+const handleRestart = () =>{
+
+}
+
 rollDiceBtn.addEventListener('click',handleDiceRoll)
-/*
-1. Roll dice and display it
- - random dice roll
-      - random number between 1-6
-      - switch statement to connect random number with relevant Img
-
--  if(dice !== 1)
-      - diceRoll + currentScore = NewScore -> display
-
-- if(dice == 1)
-      - switch player
-      - add newScores to a new variable 
-      - highlight ui 
-
-2. User holds 
-  -  current score + total score >= 100  
-
-*/
-
+holdDiceBtn.addEventListener('click',handleHoldDice)
+restartBtn.addEventListener('click', handleRestart)
